@@ -6,16 +6,31 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "target": "ES2021",
+    "target": "ES2020",
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
-    "strictNullChecks": false,
-    "noImplicitAny": false,
-    "strictBindCallApply": false,
-    "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
-  }
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "strictPropertyInitialization": false,
+    "strictBindCallApply": true,
+    "strictFunctionTypes": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": false,
+    "esModuleInterop": true,
+    "paths": {
+      "@app/*": ["src/*"],
+    },
+  },
+  "include": [
+    "./src/**/*.ts",
+    "./src/**/*.d.ts",
+    "./test/**/*.test.ts",
+    "./test/**/*.e2e-spec.ts",
+  ],
+  "exclude": [
+    "./dist",
+  ]
 }
