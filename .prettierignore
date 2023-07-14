@@ -2,3 +2,4 @@ node_modules/
 package.json
 tsconfig.json
 jest.config.ts
+jest-e2e.config.ts

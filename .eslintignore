@@ -20,3 +20,4 @@ yarn-lock.json
 swagger.json
 swagger-config.json
 jest.config.ts
+jest-e2e.config.ts
