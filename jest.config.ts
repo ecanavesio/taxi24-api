@@ -2,8 +2,9 @@
  * For a detailed explanation regarding each configuration property and type check, visit:
  * https://jestjs.io/docs/configuration
  */
+import type { Config } from "@jest/types";
 
-export default {
+const jestConfig: Config.InitialOptions = {
   // Automatically clear mock calls, instances and results before every test
   clearMocks: true,
 
@@ -101,3 +102,5 @@ export default {
     "^.+\\.(t|j)s$": "ts-jest"
   },
 };
+
+export default jestConfig;
