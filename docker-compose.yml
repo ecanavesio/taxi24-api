@@ -10,3 +10,18 @@ services:
       - .:/app
     env_file:
       - .env
+    depends_on:
+      - postgres
+    network_mode: host
+
+  postgres:
+    image: postgres:15.3-alpine3.18
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: taxi24User
+      POSTGRES_PASSWORD: SuperPowerfull24Pass
+      POSTGRES_DB: taxi24
+    volumes:
+      - .database:/var/lib/postgresql/data
+
