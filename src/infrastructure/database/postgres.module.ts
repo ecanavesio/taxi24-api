@@ -2,7 +2,13 @@ import { Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
+import { DriverEntity } from "./entities/driver.entity";
+import { PassengerEntity } from "./entities/passenger.entity";
+import { TripEntity } from "./entities/trip.entity";
 import { PostgresFactory } from "./postgres.factory";
+import { DriverRepository } from "./repositories/driver.repository";
+import { PassengerRepository } from "./repositories/passenger.repository";
+import { TripRepository } from "./repositories/trip.repository";
 
 @Module({
   imports: [
@@ -11,6 +17,9 @@ import { PostgresFactory } from "./postgres.factory";
       inject: [ConfigService],
       useFactory: PostgresFactory,
     }),
+    TypeOrmModule.forFeature([DriverEntity, PassengerEntity, TripEntity]),
   ],
+  providers: [DriverRepository, PassengerRepository, TripRepository],
+  exports: [DriverRepository, PassengerRepository, TripRepository],
 })
 export class PostgresModule {}

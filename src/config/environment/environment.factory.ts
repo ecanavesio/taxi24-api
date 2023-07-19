@@ -1,6 +1,6 @@
+import { EnvironmentVariableError } from "@app/exceptions";
 import { plainToClass } from "class-transformer";
 import { validate } from "class-validator";
-import { EnvironmentVariableError } from "@app/exceptions";
 
 import { ApplicationEnvironmentVariables } from "./types/application.environment";
 import { getEnvironmentVariables } from "./variables";
