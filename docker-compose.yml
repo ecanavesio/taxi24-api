@@ -15,7 +15,7 @@ services:
     network_mode: host
 
   postgres:
-    image: postgres:15.3-alpine3.18
+    image: postgis/postgis:15-3.3-alpine
     ports:
       - 5432:5432
     environment:

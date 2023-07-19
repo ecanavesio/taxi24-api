@@ -35,6 +35,10 @@ module.exports = {
       {
         groups: ["builtin", "external", "internal", "parent", "sibling", "index"],
         "newlines-between": "always",
+        alphabetize: {
+          order: 'asc',
+          caseInsensitive: false,
+        }
       },
     ],
   },
