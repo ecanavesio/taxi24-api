@@ -87,7 +87,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:15.3-alpine3.18
+        image: postgis/postgis:15-3.3-alpine
         env:
           POSTGRES_USER: taxi24User
           POSTGRES_PASSWORD: SuperPowerfull24Pass
