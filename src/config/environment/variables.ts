@@ -13,6 +13,6 @@ export const getEnvironmentVariables = (): PartialDeep<ApplicationEnvironmentVar
     database: process.env.POSTGRES_DB,
     synchronize: process.env.POSTGRES_SYNCHRONIZE === "true",
     autoLoadEntities: process.env.POSTGRES_AUTOLOAD_ENTITIES === "true",
-    logNotifications: process.env.POSTGRES_LOGGING === "true",
+    logging: process.env.POSTGRES_LOGGING === "true",
   },
 });

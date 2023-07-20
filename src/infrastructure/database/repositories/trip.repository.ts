@@ -1,6 +1,6 @@
+import { TripCreate } from "@app/domain/creates/trip.create";
 import { Trip } from "@app/domain/trip";
 import { PagingRequest, PagingResult } from "@app/types/paging";
-import { CreateTrip } from "@app/types/trip";
 import { geolocation2point } from "@app/utils";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -39,7 +39,7 @@ export class TripRepository {
     };
   }
 
-  async create(entity: CreateTrip): Promise<Trip> {
+  async create(entity: TripCreate): Promise<Trip> {
     const trip: TripEntity = await this.repository.save({
       fromGeolocation: geolocation2point(entity.fromGeolocation),
       toGeolocation: geolocation2point(entity.toGeolocation),

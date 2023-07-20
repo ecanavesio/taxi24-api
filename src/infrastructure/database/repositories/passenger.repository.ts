@@ -1,3 +1,4 @@
+import { PassengerCreate } from "@app/domain/creates/passenger.create";
 import { Passenger } from "@app/domain/passenger";
 import { PagingRequest, PagingResult } from "@app/types/paging";
 import { Injectable } from "@nestjs/common";
@@ -37,7 +38,7 @@ export class PassengerRepository {
     };
   }
 
-  async create(entity: Partial<Passenger>): Promise<Passenger> {
+  async create(entity: PassengerCreate): Promise<Passenger> {
     const passenger: PassengerEntity = await this.repository.save({
       passengerName: entity.passengerName,
       passengerPhone: entity.passengerPhone,
