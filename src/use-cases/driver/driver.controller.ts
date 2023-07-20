@@ -1,8 +1,7 @@
 import { Driver } from "@app/domain/driver";
 import { PagingResult } from "@app/types/paging";
-import { Body, Controller, Get, Param, Post, ParseIntPipe, Query, Res, Put } from "@nestjs/common";
-import { ApiTags, ApiOperation, ApiResponse, ApiOkResponse } from "@nestjs/swagger";
-import { Response } from "express";
+import { Body, Controller, Get, Param, Post, ParseIntPipe, Query, Put, HttpCode } from "@nestjs/common";
+import { ApiTags, ApiOperation, ApiResponse, ApiOkResponse, ApiCreatedResponse, ApiNoContentResponse, ApiBody, ApiParam } from "@nestjs/swagger";
 
 import { DriverService } from "./driver.service";
 import { CreateDriverDto } from "./dto/create-driver.dto";
@@ -15,37 +14,35 @@ export class DriverController {
   constructor(private readonly driverService: DriverService) {}
 
   @Post()
+  @HttpCode(201)
   @ApiOperation({ summary: "Create a new driver" })
-  @ApiResponse({ status: 201, description: "The created driver", type: Driver })
-  async createDriver(@Body() driver: CreateDriverDto, @Res() response: Response): Promise<Driver> {
-    const driverCreated = await this.driverService.createDriver(driver);
-    response.status(201);
-    return driverCreated;
+  @ApiCreatedResponse({ description: "The created driver", type: Driver })
+  async createDriver(@Body() driver: CreateDriverDto): Promise<Driver> {
+    return this.driverService.createDriver(driver);
   }
 
   @Get()
   @ApiOperation({ summary: "Get a list of drivers with filters" })
-  @ApiOkResponse({ status: 200, description: "The list of drivers", type: PagingResult<Driver> })
+  @ApiOkResponse({ description: "The list of drivers", type: PagingResult })
   async getDrivers(@Query() filters: FilterDriversDto): Promise<PagingResult<Driver>> {
     return this.driverService.getDrivers(filters);
   }
 
   @Get("/:driverId")
-  @ApiOperation({ summary: "Get a driver by id" })
-  @ApiResponse({ status: 200, description: "The driver entity", type: Driver })
+  @ApiOperation({ summary: "Get a driver by ID" })
+  @ApiParam({ name: "driverId", type: Number })
+  @ApiResponse({ description: "The driver", type: Driver })
   async getDriverById(@Param("driverId", ParseIntPipe) driverId: number): Promise<Driver> {
     return this.driverService.getDriverById(driverId);
   }
 
   @Put("/:driverId/geolocation")
-  @ApiOperation({ summary: "Update geolocation of a driver" })
-  @ApiResponse({ status: 204, description: "It finish" })
-  async updateGeolocation(
-    @Param("driverId", ParseIntPipe) driverId: number,
-    @Body() geolocation: NewGeolocationDto,
-    @Res() response: Response,
-  ): Promise<void> {
+  @HttpCode(204)
+  @ApiOperation({ summary: "Update the geolocation of a driver" })
+  @ApiParam({ name: "driverId", type: Number })
+  @ApiBody({ type: NewGeolocationDto })
+  @ApiNoContentResponse({ description: "The geolocation was updated successfully" })
+  async updateGeolocation(@Param("driverId", ParseIntPipe) driverId: number, @Body() geolocation: NewGeolocationDto): Promise<void> {
     await this.driverService.updateGeolocation(driverId, geolocation);
-    response.sendStatus(204);
   }
 }

@@ -7,6 +7,7 @@ import { AppController } from "./app.controller";
 import { EnvironmentModule } from "./config/environment/environment.module";
 import { PostgresModule } from "./infrastructure/database/postgres.module";
 import { DriverModule } from "./use-cases/driver/driver.module";
+import { PassengerModule } from "./use-cases/passenger/passenger.module";
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { DriverModule } from "./use-cases/driver/driver.module";
     EnvironmentModule,
     PostgresModule,
     DriverModule,
+    PassengerModule,
   ],
   controllers: [AppController],
 })
