@@ -1,7 +1,10 @@
+import { DriverStatus } from "@app/domain/enum/driver-status.enum";
+import { DriverUpdate } from "@app/domain/updates/driver.update";
 import { DriverEntity } from "@app/infrastructure/database/entities/driver.entity";
 import { driverMapper } from "@app/infrastructure/database/mappers/driver.mapper";
 import { DriverRepository } from "@app/infrastructure/database/repositories/driver.repository";
-import { Repository } from "typeorm";
+import { geolocation2point } from "@app/utils";
+import { FindOptionsWhere, LessThanOrEqual, MoreThanOrEqual, Repository } from "typeorm";
 
 describe("DriverRepository", () => {
   let driverRepository: DriverRepository;
@@ -9,6 +12,7 @@ describe("DriverRepository", () => {
     findOne: jest.Mock;
     findAndCount: jest.Mock;
     save: jest.Mock;
+    update: jest.Mock;
   };
 
   beforeEach(() => {
@@ -16,6 +20,7 @@ describe("DriverRepository", () => {
       findOne: jest.fn(),
       findAndCount: jest.fn(),
       save: jest.fn(),
+      update: jest.fn(),
     };
 
     driverRepository = new DriverRepository(mockRepository as Repository<DriverEntity>);
@@ -27,6 +32,7 @@ describe("DriverRepository", () => {
       const driverEntity = {
         driverId: driverId,
         driverName: "John Doe",
+        driverStatus: DriverStatus.AVAILABLE,
         carDescription: "Toyota Corolla",
         pricePerKmInUsd: 0.5,
       } as DriverEntity;
@@ -78,7 +84,93 @@ describe("DriverRepository", () => {
 
       expect(result.data).toEqual(expectedDrivers);
       expect(result.meta).toEqual({ limit: filters.limit, offset: filters.offset, total: totalCount });
-      expect(mockRepository.findAndCount).toHaveBeenCalledWith({ take: filters.limit, skip: filters.offset });
+      expect(mockRepository.findAndCount).toHaveBeenCalledWith({ take: filters.limit, skip: filters.offset, where: {} });
+    });
+
+    it("should return drivers with matching driverStatus", async () => {
+      const filters = { driverStatus: DriverStatus.AVAILABLE, limit: 10, offset: 0 };
+      const whereClause: FindOptionsWhere<DriverEntity> = { driverStatus: DriverStatus.AVAILABLE };
+      const drivers: DriverEntity[] = [
+        { driverStatus: DriverStatus.AVAILABLE } as DriverEntity,
+        { driverStatus: DriverStatus.AVAILABLE } as DriverEntity,
+      ];
+      const total = drivers.length;
+
+      mockRepository.findAndCount.mockResolvedValueOnce([drivers, total]);
+
+      const result = await driverRepository.find(filters);
+
+      expect(mockRepository.findAndCount).toHaveBeenCalledWith(expect.objectContaining({ where: whereClause }));
+      expect(result).toEqual(expect.objectContaining({ data: drivers.map(driverMapper), meta: { limit: 10, offset: 0, total } }));
+    });
+
+    it("should return drivers with pricePerKmInUsd less than or equal to minPricePerKmInUsd", async () => {
+      const filters = { minPricePerKmInUsd: 0.5, limit: 10, offset: 0 };
+
+      const drivers: DriverEntity[] = [{ pricePerKmInUsd: 0.4 } as DriverEntity, { pricePerKmInUsd: 0.5 } as DriverEntity];
+      const total = drivers.length;
+
+      mockRepository.findAndCount.mockResolvedValueOnce([drivers, total]);
+
+      const result = await driverRepository.find(filters);
+
+      expect(mockRepository.findAndCount).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            pricePerKmInUsd: MoreThanOrEqual(filters.minPricePerKmInUsd),
+          }),
+          skip: 0,
+          take: 10,
+        }),
+      );
+      expect(result).toEqual(expect.objectContaining({ data: drivers.map(driverMapper), meta: { limit: 10, offset: 0, total } }));
+    });
+
+    it("should return drivers with pricePerKmInUsd greater than or equal to maxPricePerKmInUsd", async () => {
+      const filters = { maxPricePerKmInUsd: 0.5, limit: 10, offset: 0 };
+      const drivers: DriverEntity[] = [{ pricePerKmInUsd: 0.5 } as DriverEntity, { pricePerKmInUsd: 0.6 } as DriverEntity];
+      const total = drivers.length;
+
+      mockRepository.findAndCount.mockResolvedValueOnce([drivers, total]);
+
+      const result = await driverRepository.find(filters);
+
+      expect(mockRepository.findAndCount).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            pricePerKmInUsd: LessThanOrEqual(filters.maxPricePerKmInUsd),
+          }),
+          skip: 0,
+          take: 10,
+        }),
+      );
+      expect(result).toEqual(expect.objectContaining({ data: drivers.map(driverMapper), meta: { limit: 10, offset: 0, total } }));
+    });
+
+    it("should return drivers near to the specified geolocation", async () => {
+      const filters = {
+        nearToGeolocation: { latitude: 10.0, longitude: 20.0, maxDistanceInKm: 5 },
+        limit: 10,
+        offset: 0,
+      };
+      const drivers: DriverEntity[] = [
+        { geolocation: { type: "Point", coordinates: [19.0, 9.0] } } as DriverEntity,
+        { geolocation: { type: "Point", coordinates: [21.0, 11.0] } } as DriverEntity,
+      ];
+      const total = drivers.length;
+
+      mockRepository.findAndCount.mockResolvedValueOnce([drivers, total]);
+
+      const result = await driverRepository.find(filters);
+
+      expect(mockRepository.findAndCount).toHaveBeenCalledWith({
+        where: {
+          geolocation: expect.anything(),
+        },
+        skip: 0,
+        take: 10,
+      });
+      expect(result).toEqual(expect.objectContaining({ data: drivers.map(driverMapper), meta: { limit: 10, offset: 0, total } }));
     });
   });
 
@@ -103,6 +195,36 @@ describe("DriverRepository", () => {
 
       expect(result).toEqual(expectedDriver);
       expect(mockRepository.save).toHaveBeenCalledWith(newDriver);
+    });
+  });
+
+  describe("update", () => {
+    it("should update the driver entity and return affected rows", async () => {
+      const driverId = 1;
+      const partialEntity: DriverUpdate = {
+        driverName: "John Doe",
+        driverStatus: DriverStatus.AVAILABLE,
+        carDescription: "Toyota Corolla",
+        pricePerKmInUsd: 0.5,
+        geolocation: { latitude: 10.0, longitude: 20.0 },
+      };
+
+      const definedValues: Partial<DriverEntity> = {
+        driverName: partialEntity.driverName,
+        driverStatus: partialEntity.driverStatus,
+        carDescription: partialEntity.carDescription,
+        pricePerKmInUsd: partialEntity.pricePerKmInUsd,
+        geolocation: geolocation2point(partialEntity.geolocation!),
+      };
+
+      const affectedRows = 1; // Number of affected rows after update
+
+      mockRepository.update.mockResolvedValue({ affected: affectedRows });
+
+      const result = await driverRepository.update(driverId, partialEntity);
+
+      expect(mockRepository.update).toHaveBeenCalledWith(driverId, definedValues);
+      expect(result).toEqual({ affected: affectedRows });
     });
   });
 });

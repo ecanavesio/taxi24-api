@@ -1,7 +1,9 @@
+import { Trim } from "@app/decorators/transform/trim.decorator";
+import { DriverCreate } from "@app/domain/creates/driver.create";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNumber, IsString, Length } from "class-validator";
+import { IsNumber, IsString, Length, Min } from "class-validator";
 
-export class CreateDriverDto {
+export class CreateDriverDto implements DriverCreate {
   @ApiProperty({
     description: "Name of the driver",
     example: "John Doe",
@@ -9,6 +11,7 @@ export class CreateDriverDto {
   })
   @IsString()
   @Length(1, 80)
+  @Trim()
   driverName: string;
 
   @ApiProperty({
@@ -18,6 +21,7 @@ export class CreateDriverDto {
   })
   @IsString()
   @Length(1, 300)
+  @Trim()
   carDescription: string;
 
   @ApiProperty({
@@ -25,5 +29,6 @@ export class CreateDriverDto {
     example: 5.99,
   })
   @IsNumber({ maxDecimalPlaces: 4 })
+  @Min(0)
   pricePerKmInUsd: number;
 }

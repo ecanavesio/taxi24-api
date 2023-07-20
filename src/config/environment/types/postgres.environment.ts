@@ -23,5 +23,5 @@ export class PostgresEnvironmentVariables {
   autoLoadEntities: boolean;
 
   @IsBoolean()
-  logNotifications: boolean;
+  logging: boolean;
 }

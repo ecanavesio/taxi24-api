@@ -1,8 +1,8 @@
-import { Geolocation } from "@app/domain/geolocation";
+import { Geolocation } from "../geolocation";
 
-export type CreateTrip = {
+export interface TripCreate {
   fromGeolocation: Geolocation;
   toGeolocation: Geolocation;
   passengerId: number;
   driverId: number;
-};
+}

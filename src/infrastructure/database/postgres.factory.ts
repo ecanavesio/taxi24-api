@@ -13,4 +13,5 @@ export const PostgresFactory = (configService: ConfigService<ApplicationEnvironm
   useUTC: true,
   connectTimeoutMS: 10_000,
   entities: [DriverEntity, PassengerEntity, TripEntity],
+  logging: true,
 });

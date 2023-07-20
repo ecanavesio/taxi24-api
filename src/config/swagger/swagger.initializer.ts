@@ -20,7 +20,7 @@ export abstract class SwaggerInitializer {
 
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup("docs", app, document, {
-      customfavIcon: "/assets/logo.png",
+      customfavIcon: "/assets/favicon.ico",
       customCssUrl: "/assets/styles.css",
       customSiteTitle: "Taxi24 - Swagger UI",
     });
