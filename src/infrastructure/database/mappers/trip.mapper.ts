@@ -14,5 +14,7 @@ export function tripMapper(tripEntity: TripEntity): Trip {
   trip.toGeolocation = point2geolocation(tripEntity.toGeolocation);
   trip.driver = driverMapper(tripEntity.driver);
   trip.passenger = passengerMapper(tripEntity.passenger);
+  trip.createdAt = tripEntity.createdAt;
+  trip.updatedAt = tripEntity.updatedAt;
   return trip;
 }

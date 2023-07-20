@@ -1,5 +1,6 @@
 import { PassengerCreate } from "@app/domain/creates/passenger.create";
 import { Passenger } from "@app/domain/passenger";
+import { PassengerUpdate } from "@app/domain/updates/passenger.update";
 import { PagingRequest, PagingResult } from "@app/types/paging";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -45,5 +46,14 @@ export class PassengerRepository {
     });
 
     return passengerMapper(passenger);
+  }
+
+  async update(passengerId: number, partialEntity: PassengerUpdate): Promise<{ affected?: number }> {
+    const definedValues: Partial<PassengerEntity> = {};
+
+    if (partialEntity.passengerName) definedValues.passengerName = partialEntity.passengerName;
+    if (partialEntity.passengerPhone) definedValues.passengerPhone = partialEntity.passengerPhone;
+
+    return this.repository.update(passengerId, definedValues);
   }
 }

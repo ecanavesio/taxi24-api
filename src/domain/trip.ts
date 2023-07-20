@@ -10,4 +10,6 @@ export class Trip {
   tripStatus: TripStatus;
   passenger: Passenger;
   driver: Driver;
+  createdAt: string;
+  updatedAt: string;
 }

@@ -1,4 +1,4 @@
-import { Column, Entity, Point, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 import { WithTimestamps } from "./extends/with-timestamps";
 
@@ -12,7 +12,4 @@ export class PassengerEntity extends WithTimestamps {
 
   @Column({ name: "passenger_phone", type: "varchar", length: 30 })
   passengerPhone: string;
-
-  @Column("geography", { nullable: true, spatialFeatureType: "Point", srid: 4326 })
-  geolocation?: Point;
 }
