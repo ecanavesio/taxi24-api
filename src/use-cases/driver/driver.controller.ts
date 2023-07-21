@@ -1,5 +1,5 @@
 import { Driver } from "@app/domain/driver";
-import { PagingResult } from "@app/types/paging";
+import { PagingResult } from "@app/types";
 import { Body, Controller, Get, Param, Post, ParseIntPipe, Query, Put, HttpCode } from "@nestjs/common";
 import { ApiTags, ApiOperation, ApiResponse, ApiOkResponse, ApiCreatedResponse, ApiNoContentResponse, ApiBody, ApiParam } from "@nestjs/swagger";
 
@@ -23,7 +23,7 @@ export class DriverController {
 
   @Get()
   @ApiOperation({ summary: "Get a list of drivers with filters" })
-  @ApiOkResponse({ description: "The list of drivers", type: PagingResult })
+  @ApiOkResponse({ description: "The list of drivers", type: PagingResult<Driver> })
   async getDrivers(@Query() filters: FilterDriversDto): Promise<PagingResult<Driver>> {
     return this.driverService.getDrivers(filters);
   }

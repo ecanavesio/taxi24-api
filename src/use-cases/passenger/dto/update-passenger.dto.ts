@@ -14,6 +14,7 @@ export class UpdatePassengerDto implements PassengerUpdate {
 
   @ApiProperty({
     description: "The phone number of the passenger",
+    required: false,
     example: "1234567890",
   })
   @IsOptional()

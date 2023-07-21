@@ -9,7 +9,10 @@ describe("Geolocation Converter", () => {
         type: "Point",
         coordinates: [10.123, 20.456],
       };
-      const expectedGeolocation = new Geolocation(20.456, 10.123);
+      const expectedGeolocation: Geolocation = {
+        latitude: 20.456,
+        longitude: 10.123,
+      };
 
       const result = point2geolocation(point);
 
@@ -19,7 +22,10 @@ describe("Geolocation Converter", () => {
 
   describe("geolocation2point", () => {
     it("should convert Geolocation to Point", () => {
-      const geolocation = new Geolocation(20.456, 10.123);
+      const geolocation: Geolocation = {
+        latitude: 20.456,
+        longitude: 10.123,
+      };
       const expectedPoint: Point = {
         type: "Point",
         coordinates: [10.123, 20.456],

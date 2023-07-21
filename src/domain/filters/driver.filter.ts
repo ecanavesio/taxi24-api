@@ -1,4 +1,4 @@
-import { PagingRequest } from "@app/types/paging";
+import { PagingRequest } from "@app/types";
 
 import { DriverStatus } from "../enum/driver-status.enum";
 import { Geolocation } from "../geolocation";
