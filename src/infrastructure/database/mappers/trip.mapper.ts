@@ -1,5 +1,6 @@
 import { Trip } from "@app/domain/trip";
-import { point2geolocation } from "@app/utils";
+import { TripWithoutDriverAndPassenger } from "@app/types";
+import { point2geolocation, calculateGeodistance } from "@app/utils";
 
 import { TripEntity } from "../entities/trip.entity";
 
@@ -7,14 +8,35 @@ import { driverMapper } from "./driver.mapper";
 import { passengerMapper } from "./passenger.mapper";
 
 export function tripMapper(tripEntity: TripEntity): Trip {
-  const trip = new Trip();
-  trip.tripId = tripEntity.tripId;
-  trip.tripStatus = tripEntity.tripStatus;
-  trip.fromGeolocation = point2geolocation(tripEntity.fromGeolocation);
-  trip.toGeolocation = point2geolocation(tripEntity.toGeolocation);
-  trip.driver = driverMapper(tripEntity.driver);
-  trip.passenger = passengerMapper(tripEntity.passenger);
-  trip.createdAt = tripEntity.createdAt;
-  trip.updatedAt = tripEntity.updatedAt;
-  return trip;
+  const fromGeolocation = point2geolocation(tripEntity.fromGeolocation);
+  const toGeolocation = point2geolocation(tripEntity.toGeolocation);
+  const distance = calculateGeodistance(fromGeolocation, toGeolocation);
+
+  return {
+    tripId: tripEntity.tripId,
+    tripStatus: tripEntity.tripStatus,
+    fromGeolocation,
+    toGeolocation,
+    distance,
+    driver: driverMapper(tripEntity.driver),
+    passenger: passengerMapper(tripEntity.passenger),
+    createdAt: tripEntity.createdAt,
+    updatedAt: tripEntity.updatedAt,
+  };
+}
+
+export function tripCreatedMapper(tripEntity: Omit<TripEntity, "driver" | "passenger">): TripWithoutDriverAndPassenger {
+  const fromGeolocation = point2geolocation(tripEntity.fromGeolocation);
+  const toGeolocation = point2geolocation(tripEntity.toGeolocation);
+  const distance = calculateGeodistance(fromGeolocation, toGeolocation);
+
+  return {
+    tripId: tripEntity.tripId,
+    tripStatus: tripEntity.tripStatus,
+    fromGeolocation,
+    toGeolocation,
+    distance,
+    createdAt: tripEntity.createdAt,
+    updatedAt: tripEntity.updatedAt,
+  };
 }

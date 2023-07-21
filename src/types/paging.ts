@@ -23,14 +23,14 @@ export class PagingResult<T> {
 }
 
 export class PagingRequest {
-  @ApiPropertyOptional({ default: 20, maximum: 1000, minimum: 1 })
+  @ApiPropertyOptional({ default: 20, maximum: 1000, minimum: 1, type: Number })
   @Min(1)
   @Max(1000)
   @IsNumber()
   @Type(() => Number)
   limit = 20;
 
-  @ApiPropertyOptional({ default: 0, minimum: 0 })
+  @ApiPropertyOptional({ default: 0, minimum: 0, type: Number })
   @Min(0)
   @IsNumber()
   @Type(() => Number)

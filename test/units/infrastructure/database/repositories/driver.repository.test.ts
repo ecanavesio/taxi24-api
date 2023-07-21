@@ -4,12 +4,13 @@ import { DriverEntity } from "@app/infrastructure/database/entities/driver.entit
 import { driverMapper } from "@app/infrastructure/database/mappers/driver.mapper";
 import { DriverRepository } from "@app/infrastructure/database/repositories/driver.repository";
 import { geolocation2point } from "@app/utils";
-import { FindOptionsWhere, LessThanOrEqual, MoreThanOrEqual, Repository } from "typeorm";
+import { And, FindOptionsWhere, LessThanOrEqual, MoreThanOrEqual, Repository } from "typeorm";
 
 describe("DriverRepository", () => {
   let driverRepository: DriverRepository;
   let mockRepository: Partial<jest.Mocked<Repository<DriverEntity>>> & {
     findOne: jest.Mock;
+    findOneOrFail: jest.Mock;
     findAndCount: jest.Mock;
     save: jest.Mock;
     update: jest.Mock;
@@ -18,6 +19,7 @@ describe("DriverRepository", () => {
   beforeEach(() => {
     mockRepository = {
       findOne: jest.fn(),
+      findOneOrFail: jest.fn(),
       findAndCount: jest.fn(),
       save: jest.fn(),
       update: jest.fn(),
@@ -55,6 +57,33 @@ describe("DriverRepository", () => {
 
       expect(result).toBeNull();
       expect(mockRepository.findOne).toHaveBeenCalledWith({ where: { driverId: invalidDriverId } });
+    });
+  });
+
+  describe("getByIdOrFail", () => {
+    it("should return the driver with the specified driverId", async () => {
+      const driverId = 1;
+      const driverEntity = {
+        driverId: driverId,
+        driverName: "John Doe",
+        driverStatus: DriverStatus.AVAILABLE,
+        carDescription: "Toyota Corolla",
+        pricePerKmInUsd: 0.5,
+      } as DriverEntity;
+      const expectedDriver = driverMapper(driverEntity);
+
+      mockRepository.findOneOrFail.mockResolvedValue(driverEntity);
+
+      const result = await driverRepository.getByIdOrFail(driverId);
+
+      expect(result).toEqual(expectedDriver);
+      expect(mockRepository.findOneOrFail).toHaveBeenCalledWith({ where: { driverId } });
+    });
+
+    it("should throw an exception when driver with the specified driverId is not found", async () => {
+      const driverId = 2;
+      mockRepository.findOneOrFail.mockRejectedValueOnce(new Error("Driver not found"));
+      expect(mockRepository.findOneOrFail(driverId)).rejects.toThrowError();
     });
   });
 
@@ -139,6 +168,28 @@ describe("DriverRepository", () => {
         expect.objectContaining({
           where: expect.objectContaining({
             pricePerKmInUsd: LessThanOrEqual(filters.maxPricePerKmInUsd),
+          }),
+          skip: 0,
+          take: 10,
+        }),
+      );
+      expect(result).toEqual(expect.objectContaining({ data: drivers.map(driverMapper), meta: { limit: 10, offset: 0, total } }));
+    });
+
+    it("should return drivers with pricePerKmInUsd between minPricePerKmInUsd and maxPricePerKmInUsd", async () => {
+      const filters = { minPricePerKmInUsd: 0.3, maxPricePerKmInUsd: 0.8, limit: 10, offset: 0 };
+
+      const drivers: DriverEntity[] = [{ pricePerKmInUsd: 0.4 } as DriverEntity, { pricePerKmInUsd: 0.5 } as DriverEntity];
+      const total = drivers.length;
+
+      mockRepository.findAndCount.mockResolvedValueOnce([drivers, total]);
+
+      const result = await driverRepository.find(filters);
+
+      expect(mockRepository.findAndCount).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            pricePerKmInUsd: And(MoreThanOrEqual(filters.minPricePerKmInUsd), LessThanOrEqual(filters.maxPricePerKmInUsd)),
           }),
           skip: 0,
           take: 10,

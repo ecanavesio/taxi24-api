@@ -2,12 +2,13 @@ import { DriverCreate } from "@app/domain/creates/driver.create";
 import { Driver } from "@app/domain/driver";
 import { DriverFilter } from "@app/domain/filters/driver.filter";
 import { DriverUpdate } from "@app/domain/updates/driver.update";
-import { PagingResult } from "@app/types/paging";
+import { PagingResult } from "@app/types";
 import { geolocation2point } from "@app/utils";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { FindOptionsWhere, LessThanOrEqual, MoreThanOrEqual, Raw, Repository } from "typeorm";
+import { And, FindOptionsWhere, LessThanOrEqual, MoreThanOrEqual, Raw, Repository } from "typeorm";
 
+import { TransactionalManager } from "../database.manager";
 import { DriverEntity } from "../entities/driver.entity";
 import { driverMapper } from "../mappers/driver.mapper";
 
@@ -25,14 +26,20 @@ export class DriverRepository {
     return driverMapper(driver);
   }
 
+  async getByIdOrFail(driverId: number): Promise<Driver> {
+    const driver = await this.repository.findOneOrFail({ where: { driverId } });
+    return driverMapper(driver);
+  }
+
   async find(filters: DriverFilter): Promise<PagingResult<Driver>> {
     const whereClause: FindOptionsWhere<DriverEntity> = {};
 
     if (filters.driverStatus) whereClause.driverStatus = filters.driverStatus;
 
-    if (filters.minPricePerKmInUsd) whereClause.pricePerKmInUsd = MoreThanOrEqual(filters.minPricePerKmInUsd);
-
-    if (filters.maxPricePerKmInUsd) whereClause.pricePerKmInUsd = LessThanOrEqual(filters.maxPricePerKmInUsd);
+    if (filters.minPricePerKmInUsd && filters.maxPricePerKmInUsd) {
+      whereClause.pricePerKmInUsd = And(MoreThanOrEqual(filters.minPricePerKmInUsd), LessThanOrEqual(filters.maxPricePerKmInUsd));
+    } else if (filters.minPricePerKmInUsd) whereClause.pricePerKmInUsd = MoreThanOrEqual(filters.minPricePerKmInUsd);
+    else if (filters.maxPricePerKmInUsd) whereClause.pricePerKmInUsd = LessThanOrEqual(filters.maxPricePerKmInUsd);
 
     if (filters.nearToGeolocation && JSON.stringify(filters.nearToGeolocation) !== "{}") {
       whereClause.geolocation = Raw(
@@ -58,8 +65,10 @@ export class DriverRepository {
     };
   }
 
-  async create(entity: DriverCreate): Promise<Driver> {
-    const driver: DriverEntity = await this.repository.save({
+  async create(entity: DriverCreate, transactionalManager?: TransactionalManager): Promise<Driver> {
+    const repository = transactionalManager ? transactionalManager.getRepository(DriverEntity) : this.repository;
+
+    const driver: DriverEntity = await repository.save({
       driverName: entity.driverName,
       carDescription: entity.carDescription,
       pricePerKmInUsd: entity.pricePerKmInUsd,
@@ -68,7 +77,7 @@ export class DriverRepository {
     return driverMapper(driver);
   }
 
-  async update(driverId: number, partialEntity: DriverUpdate): Promise<{ affected?: number }> {
+  async update(driverId: number, partialEntity: DriverUpdate, transactionalManager?: TransactionalManager): Promise<{ affected?: number }> {
     const definedValues: Partial<DriverEntity> = {};
 
     if (partialEntity.driverName) definedValues.driverName = partialEntity.driverName;
@@ -79,6 +88,7 @@ export class DriverRepository {
       definedValues.geolocation = geolocation2point(partialEntity.geolocation);
     }
 
-    return this.repository.update(driverId, definedValues);
+    const repository = transactionalManager ? transactionalManager.getRepository(DriverEntity) : this.repository;
+    return repository.update(driverId, definedValues);
   }
 }

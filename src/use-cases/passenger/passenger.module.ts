@@ -1,4 +1,4 @@
-import { PostgresModule } from "@app/infrastructure/database/postgres.module";
+import { PostgresModule } from "@app/infrastructure/database/database.module";
 import { Module } from "@nestjs/common";
 
 import { PassengerController } from "./passenger.controller";

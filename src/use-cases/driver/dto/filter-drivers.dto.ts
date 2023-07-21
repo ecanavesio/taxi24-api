@@ -2,7 +2,7 @@ import { IsGreaterThan } from "@app/decorators/validations/more-than.decorator";
 import { DriverStatus } from "@app/domain/enum/driver-status.enum";
 import { DriverFilter } from "@app/domain/filters/driver.filter";
 import { Geolocation } from "@app/domain/geolocation";
-import { PagingRequest } from "@app/types/paging";
+import { PagingRequest } from "@app/types";
 import { ApiProperty } from "@nestjs/swagger";
 import { Transform, Type, plainToInstance } from "class-transformer";
 import { IsNumber, IsOptional, IsEnum, Min } from "class-validator";

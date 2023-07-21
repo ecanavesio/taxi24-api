@@ -1,5 +1,5 @@
 import { Passenger } from "@app/domain/passenger";
-import { PagingResult } from "@app/types/paging";
+import { PagingResult } from "@app/types";
 import { Body, Controller, Get, HttpCode, Param, ParseIntPipe, Post, Put, Query } from "@nestjs/common";
 import { ApiBody, ApiCreatedResponse, ApiNoContentResponse, ApiOkResponse, ApiOperation, ApiParam, ApiQuery, ApiTags } from "@nestjs/swagger";
 
@@ -26,7 +26,7 @@ export class PassengerController {
   @ApiOperation({ summary: "Get a list of passengers" })
   @ApiQuery({ name: "limit", required: false, type: Number })
   @ApiQuery({ name: "offset", required: false, type: Number })
-  @ApiOkResponse({ description: "The list of passengers", type: PagingResult })
+  @ApiOkResponse({ description: "The list of passengers", type: PagingResult<Passenger> })
   async getPassengers(@Query() filters: FilterPassengerDto): Promise<PagingResult<Passenger>> {
     return this.passengerService.getPassengers(filters);
   }

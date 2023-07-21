@@ -1,7 +1,7 @@
 import { Driver } from "@app/domain/driver";
 import { DriverStatus } from "@app/domain/enum/driver-status.enum";
 import { DriverRepository } from "@app/infrastructure/database/repositories/driver.repository";
-import { PagingResult } from "@app/types/paging";
+import { PagingResult } from "@app/types";
 import { DriverService } from "@app/use-cases/driver/driver.service";
 import { CreateDriverDto } from "@app/use-cases/driver/dto/create-driver.dto";
 import { FilterDriversDto } from "@app/use-cases/driver/dto/filter-drivers.dto";

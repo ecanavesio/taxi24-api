@@ -1,3 +1,3 @@
-import { PagingRequest } from "@app/types/paging";
+import { PagingRequest } from "@app/types";
 
 export interface PassengerFilter extends PagingRequest {}

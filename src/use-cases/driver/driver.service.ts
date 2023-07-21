@@ -1,6 +1,6 @@
 import { Driver } from "@app/domain/driver";
 import { DriverRepository } from "@app/infrastructure/database/repositories/driver.repository";
-import { PagingResult } from "@app/types/paging";
+import { PagingResult } from "@app/types";
 import { Injectable, NotFoundException } from "@nestjs/common";
 
 import { CreateDriverDto } from "./dto/create-driver.dto";
@@ -21,13 +21,13 @@ export class DriverService {
 
   async getDriverById(driverId: number): Promise<Driver> {
     const driver = await this.driverRepository.getById(driverId);
-    if (driver === null) throw new NotFoundException();
+    if (driver === null) throw new NotFoundException("Driver not found");
 
     return driver;
   }
   async updateGeolocation(driverId: number, geolocation: NewGeolocationDto): Promise<void> {
     const driver = await this.driverRepository.getById(driverId);
-    if (driver === null) throw new NotFoundException();
+    if (driver === null) throw new NotFoundException("Driver not found");
 
     await this.driverRepository.update(driverId, { geolocation });
   }
