@@ -5,4 +5,5 @@ export interface TripCreate {
   toGeolocation: Geolocation;
   passengerId: number;
   driverId: number;
+  pricePerKmInUsd: number;
 }

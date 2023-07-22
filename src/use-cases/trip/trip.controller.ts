@@ -44,9 +44,17 @@ export class TripController {
   @ApiOperation({ summary: "finish a trip by with the posibility to change the final geolocation" })
   @ApiParam({ name: "tripId", type: Number })
   @ApiBody({ type: FinishTripDto })
-  @ApiOkResponse({ description: "The trip was updated successfully", type: Trip })
+  @ApiOkResponse({ description: "The trip was finished successfully", type: Trip })
   async finishTrip(@Param("tripId", ParseIntPipe) tripId: number, @Body() props: FinishTripDto): Promise<Trip> {
-    await this.tripService.finishTrip(tripId, props);
-    return this.tripService.getTripById(tripId);
+    return this.tripService.finishTrip(tripId, props);
+  }
+
+  @Put("/:tripId/cancel")
+  @ApiOperation({ summary: "finish a trip by with the posibility to change the final geolocation" })
+  @ApiParam({ name: "tripId", type: Number })
+  @ApiBody({ type: FinishTripDto })
+  @ApiOkResponse({ description: "The trip was cancelled successfully", type: Trip })
+  async cancelTrip(@Param("tripId", ParseIntPipe) tripId: number): Promise<Trip> {
+    return this.tripService.cancelTrip(tripId);
   }
 }

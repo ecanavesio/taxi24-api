@@ -4,7 +4,7 @@ import { WithTimestamps } from "./extends/with-timestamps";
 
 @Entity({ name: "passengers" })
 export class PassengerEntity extends WithTimestamps {
-  @PrimaryGeneratedColumn({ name: "passenger_id", type: "bigint" })
+  @PrimaryGeneratedColumn({ name: "passenger_id", type: "bigint", primaryKeyConstraintName: "pk_passenger_id" })
   passengerId: number;
 
   @Column({ name: "passenger_name", type: "varchar", length: 80 })
