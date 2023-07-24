@@ -4,7 +4,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import { IsNumber, IsObject, ValidateNested } from "class-validator";
 
-export class CreateTripDto implements TripCreate {
+export class CreateTripDto implements Omit<TripCreate, "pricePerKmInUsd"> {
   @ApiProperty({ type: () => Geolocation })
   @IsObject()
   @ValidateNested()

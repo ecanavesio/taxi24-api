@@ -5,7 +5,7 @@ import { WithTimestamps } from "./extends/with-timestamps";
 
 @Entity({ name: "drivers" })
 export class DriverEntity extends WithTimestamps {
-  @PrimaryGeneratedColumn({ name: "driver_id", type: "bigint" })
+  @PrimaryGeneratedColumn({ name: "driver_id", type: "bigint", primaryKeyConstraintName: "pk_driver_id" })
   driverId: number;
 
   @Column({ name: "driver_name", type: "varchar", length: 80 })

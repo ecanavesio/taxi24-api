@@ -18,6 +18,7 @@ export function tripMapper(tripEntity: TripEntity): Trip {
     fromGeolocation,
     toGeolocation,
     distance,
+    pricePerKmInUsd: tripEntity.pricePerKmInUsd,
     driver: driverMapper(tripEntity.driver),
     passenger: passengerMapper(tripEntity.passenger),
     createdAt: tripEntity.createdAt,
@@ -36,6 +37,7 @@ export function tripCreatedMapper(tripEntity: Omit<TripEntity, "driver" | "passe
     fromGeolocation,
     toGeolocation,
     distance,
+    pricePerKmInUsd: tripEntity.pricePerKmInUsd,
     createdAt: tripEntity.createdAt,
     updatedAt: tripEntity.updatedAt,
   };

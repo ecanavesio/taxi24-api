@@ -11,6 +11,7 @@ import { CreateTripDto } from "./dto/create-trip.dto";
 import { FilterTripDto } from "./dto/filter-trip.dto";
 import { FinishTripDto } from "./dto/finish-trip.dto";
 import { TripCreateAction } from "./trip-create.action";
+import { TripCancelAction } from "./trip.cancel.action";
 import { TripFinishAction } from "./trip.finish.action";
 
 @Injectable()
@@ -21,6 +22,7 @@ export class TripService {
     private readonly driverRepository: DriverRepository,
     private readonly tripCreateAction: TripCreateAction,
     private readonly tripFinishAction: TripFinishAction,
+    private readonly tripCancelAction: TripCancelAction,
   ) {}
 
   async createTrip(trip: CreateTripDto): Promise<Trip> {
@@ -39,7 +41,7 @@ export class TripService {
 
     if (driver.driverStatus !== DriverStatus.AVAILABLE) throw new BadRequestException("Driver is not available");
 
-    return this.tripCreateAction.run(trip);
+    return this.tripCreateAction.run(trip, driver.pricePerKmInUsd);
   }
 
   async getTrips(filters: FilterTripDto): Promise<PagingResult<Trip>> {
@@ -60,5 +62,14 @@ export class TripService {
     if (trip.tripStatus !== TripStatus.ACTIVE) throw new BadRequestException("Trip is not active");
 
     return this.tripFinishAction.run(trip, props);
+  }
+
+  async cancelTrip(tripId: number): Promise<Trip> {
+    const trip = await this.tripRepository.getById(tripId);
+    if (trip === null) throw new NotFoundException();
+
+    if (trip.tripStatus !== TripStatus.ACTIVE) throw new BadRequestException("Trip is not active");
+
+    return this.tripCancelAction.run(trip);
   }
 }

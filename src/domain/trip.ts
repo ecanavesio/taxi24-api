@@ -30,6 +30,10 @@ export class Trip {
   @IsEnum(TripStatus)
   tripStatus: TripStatus;
 
+  @ApiProperty({ type: Number })
+  @IsNumber()
+  pricePerKmInUsd: number;
+
   @ApiProperty({ type: Passenger })
   @ValidateNested()
   @Type(() => Passenger)
