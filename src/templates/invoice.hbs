@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Invoice</title>
+  <style>
+    /* Add your custom CSS styles for the invoice here */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .header {
+      text-align: center;
+      font-size: 32px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+    .invoice-container {
+      background-color: #f8f8f8;
+      padding: 20px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+    }
+    .info {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .info-label {
+      font-weight: bold;
+      color: #333;
+    }
+    .geolocation-info {
+      margin-top: 10px;
+      color: #666;
+    }
+    .total {
+      font-size: 24px;
+      font-weight: bold;
+      text-align: right;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">Invoice</div>
+  <div class="invoice-container">
+    <div class="info">
+      <span class="info-label">Trip ID:</span> {{ tripId }}
+    </div>
+    <div class="info">
+      <span class="info-label">Passenger Name:</span> {{ passengerName }}
+    </div>
+    <div class="info">
+      <span class="info-label">Driver Name:</span> {{ driverName }}
+    </div>
+    <div class="info">
+      <span class="info-label">From Geolocation:</span>
+      <div class="geolocation-info">
+        Latitude: {{ fromGeolocation.latitude }}<br>
+        Longitude: {{ fromGeolocation.longitude }}
+      </div>
+    </div>
+    <div class="info">
+      <span class="info-label">To Geolocation:</span>
+      <div class="geolocation-info">
+        Latitude: {{ toGeolocation.latitude }}<br>
+        Longitude: {{ toGeolocation.longitude }}
+      </div>
+    </div>
+    <div class="info">
+      <span class="info-label">Distance:</span> {{ distance }} km
+    </div>
+    <div class="info">
+      <span class="info-label">Price per Km (USD):</span> ${{ pricePerKmInUsd }}
+    </div>
+    <div class="total">
+      <span class="info-label">Total to Pay (USD):</span> ${{ totalToPay }}
+    </div>
+  </div>
+</body>
+</html>

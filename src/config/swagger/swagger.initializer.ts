@@ -16,6 +16,7 @@ export abstract class SwaggerInitializer {
       .addTag("Drivers")
       .addTag("Passengers")
       .addTag("Trips")
+      .addTag("Invoices")
       .build();
 
     const document = SwaggerModule.createDocument(app, config);

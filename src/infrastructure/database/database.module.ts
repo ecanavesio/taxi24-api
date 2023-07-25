@@ -23,4 +23,4 @@ import { TripRepository } from "./repositories/trip.repository";
   providers: [DriverRepository, PassengerRepository, TripRepository, DatabaseManager],
   exports: [DriverRepository, PassengerRepository, TripRepository, DatabaseManager],
 })
-export class PostgresModule {}
+export class DatabaseModule {}
