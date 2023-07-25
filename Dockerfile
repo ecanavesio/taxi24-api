@@ -1,5 +1,13 @@
 FROM node:18.16.1-alpine3.17 AS base
 
+RUN apk add --no-cache \
+  tini \
+  udev \
+  chromium \
+  freetype \
+  harfbuzz \
+  ttf-freefont
+
 WORKDIR /app
 
 COPY package*.json ./
